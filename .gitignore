@@ -1,11 +1,65 @@
-.env
+# Python/Django
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+db.sqlite3
+
+# Django stuff
+*.log
+*.pot
+local_settings.py
+media/
+staticfiles/
+static/
+*.mo
+*.coverage
+coverage.xml
+*.egg-info/
+dist/
+build/
+
+# Certificates / keys
 cert.crt
 cert.key
 
-### Django ###
+# Environment files
+.env
+.env.*
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Mac / Linux / Windows system files
+.DS_Store
+Thumbs.db
+*.bak
+*.tmp
+
+# Migrations (optional, sometimes you track them)
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Pytest
+.pytest_cache/
+
+# MyPy / type checks
+.mypy_cache/
+.dmypy.json
+.pyre/
+
+# Docker
 *.log
-*.pot
-*.pyc
-__pycache__/
-local_settings.py
-media/
+docker-compose.override.yml

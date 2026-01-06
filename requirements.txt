@@ -1,27 +1,6 @@
-*********************************************
-*   PACKAGES/DEPENDENCIES FOR DEVELOPMENT   *
-**********************************************
 Django==5.1.2
-Postgresql==16.3
-
-*************Install with pip3/pip*************
-#DATABASE
 psycopg2==2.9.10
-
-# Database to .xlsx Exportation 
 openpyxl==3.1.5
-
-#For HTTPS Development server
-django-extensions==3.2.3
-pyOpenSSL==24.2.1
-Werkzeug==3.1.2
-
-NOTE: To run the server in HTTPS, run this following command:
-./manage.py runserver_plus --cert-file cert.crt 0.0.0.0:8000
-
-*************System Packages Requirements************
-Ubuntu Server:
-    sudo apt install build-essential libpq-dev python3-dev
-
-Arch Linux:
-    sudo pacman -S base-devel libpq python
+python-decouple
+djangorestframework
+weasyprint
