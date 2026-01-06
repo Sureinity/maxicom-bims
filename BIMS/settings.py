@@ -28,17 +28,15 @@ MEDIA_URL = "/media/"
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [config('ALLOWED_HOSTS')]
 
-# Commented the HTTPS-related below for development server usage purposes.
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
 
-# SESSION_COOKIE_SECURE = True
-# CSRF_COOKIE_SECURE = True
-# SECURE_SSL_REDIRECT = True
-
-#CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS')]
+CSRF_TRUSTED_ORIGINS = [config('CSRF_TRUSTED_ORIGINS')]
 # Application definition
 
 INSTALLED_APPS = [
@@ -51,8 +49,6 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.scan_book',
     "apps.admin_inventory",
-
-    "rest_framework",
 ]
 
 MIDDLEWARE = [
