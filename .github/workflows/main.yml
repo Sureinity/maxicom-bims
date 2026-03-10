@@ -1,0 +1,40 @@
+---
+name: Django PR Gate
+
+on:
+  pull_request:
+    branches: [main, development, feature/*]
+  push:
+    branches: [main, development, feature/*]
+
+
+jobs:
+  ci:
+    name: Django PR Gate (CI)
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALLOWED_HOSTS: ""
+      CSRF_TRUSTED_ORIGINS: ""
+      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+      POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
+      POSTGRES_PORT: ${{ secrets.POSTGRES_PORT }}
+    services:
+      postgresql:
+        image: postgres
+        env:
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+    steps:
+      - name: Checkout Django Codebase
+        uses: actions/checkout@v6
+
+      - name: Pre-flight Tests
+        run: |
+          pwd
+          ls
+          env
