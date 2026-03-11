@@ -1,0 +1,6 @@
+Django==5.1.2
+psycopg2-binary==2.9.11
+openpyxl==3.1.5
+python-decouple
+djangorestframework
+weasyprint
