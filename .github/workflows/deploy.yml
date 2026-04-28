@@ -27,7 +27,7 @@ env:
 jobs:
   build-and-push:
     name: Build Docker Image with ARM Architecture and Push to GHCR 
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,7 +52,7 @@ jobs:
           platforms: linux/arm/v7
           push: True
           # tags: ${{ env.REGISTRY }}/${{ github.repository }}/armv7
-          tags: ${{ env.REGISTRY }}/sureinity/maxicom-bims/armv7
+          tags: ${{ env.REGISTRY }}/sureinity/maxicom-bims:armv7
 
   # pull-from-server:
   #   name: Command server to pull and run Docker Image
