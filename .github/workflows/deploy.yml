@@ -9,9 +9,14 @@ name: Deploy to Server
 #     types:
 #       - completed
 
+# on:
+#   workflow_dispatch:
+   
 on:
-  workflow_dispatch:
-    
+  push:
+    branches:
+      - test/cicd
+
 permissions:
   contents: read
   packages: write
