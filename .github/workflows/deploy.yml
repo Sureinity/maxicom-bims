@@ -51,7 +51,8 @@ jobs:
           context: .
           platforms: linux/arm/v7
           push: True
-          tags: ${{ env.REGISTRY }}/${{ github.repository }}/armv7
+          # tags: ${{ env.REGISTRY }}/${{ github.repository }}/armv7
+          tags: ${{ env.REGISTRY }}/sureinity/maxicom-bims/armv7
 
   # pull-from-server:
   #   name: Command server to pull and run Docker Image
