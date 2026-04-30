@@ -59,7 +59,7 @@ jobs:
   pull-from-server:
     name: Command server to pull and run Docker Image
     runs-on: ubuntu-latest
-    needs: build-and-push
+ #   needs: build-and-push
     environment: staging
     steps:
       - name: Setup Tailscale on Runner
