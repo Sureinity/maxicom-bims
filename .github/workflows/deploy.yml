@@ -54,8 +54,20 @@ jobs:
           # tags: ${{ env.REGISTRY }}/${{ github.repository }}/armv7
           tags: ${{ env.REGISTRY }}/sureinity/maxicom-bims:armv7
 
-  # pull-from-server:
-  #   name: Command server to pull and run Docker Image
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: 
+  pull-from-server:
+    name: Command server to pull and run Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Tailscale on Runner
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:github-runner
+
+      - name: Test SSH Connection to Server
+        run: |
+          ssh -oStrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "hostname && whoami"
+
+
+
