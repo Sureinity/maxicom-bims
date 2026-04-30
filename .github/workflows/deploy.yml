@@ -29,6 +29,7 @@ jobs:
   build-and-push:
     name: Build Docker Image with ARM Architecture and Push to GHCR 
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
