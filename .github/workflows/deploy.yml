@@ -67,7 +67,7 @@ jobs:
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           audience: ${{ secrets.TS_AUDIENCE }}
-          tags: tag:github-runner
+          tags: tag:cicd
 
       - name: Test SSH Connection to Server
         run: |
