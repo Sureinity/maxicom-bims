@@ -26,40 +26,9 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
-  # build-and-push:
-  #   name: Build Docker Image with ARM Architecture and Push to GHCR 
-  #   runs-on: ubuntu-latest
-  #   environment: staging
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Login to GHCR
-  #       uses: docker/login-action@v4
-  #       with:
-  #         registry: ${{ env.REGISTRY }}
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #
-  #     - name: Docker Setup QEMU
-  #       uses: docker/setup-qemu-action@v4.0.0
-  #
-  #     - name: Docker Setup Buildx
-  #       uses: docker/setup-buildx-action@v4.0.0
-  #
-  #     - name: Build and push Docker images
-  #       uses: docker/build-push-action@v7.1.0
-  #       with:
-  #         context: .
-  #         platforms: linux/arm/v7
-  #         push: True
-  #         # tags: ${{ env.REGISTRY }}/${{ github.repository }}/armv7
-  #         tags: ${{ env.REGISTRY }}/sureinity/maxicom-bims:armv7
-
   pull-from-server:
     name: Command server to pull and run Docker Image
     runs-on: ubuntu-latest
- #   needs: build-and-push
     environment: staging
     steps:
       - name: Setup Tailscale on Runner
@@ -78,6 +47,18 @@ jobs:
 
           ssh-keyscan ${{ secrets.TS_SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Test SSH Connection to Server
+      - name: Pull Codebase from Github
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "hostname && whoami"
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "
+            eval \"\$(ssh-agent -s)\"
+            ssh-add '${{ TS_SERVER_KEYS_PATH }}'
+            cd ${{ secrets.APP_DIR }}
+            git pull
+          "
+
+      - name: (TEST) Pull image from GHCR
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "
+            echo "${{ secrets.GITHUB_TOKEN }}" docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/armv7
+          "
