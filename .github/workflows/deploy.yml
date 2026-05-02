@@ -51,8 +51,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "
             eval \"\$(ssh-agent -s)\"
-            ssh-add '${{ TS_SERVER_KEYS_PATH }}'
+            ssh-add '${{ secrets.TS_SERVER_KEYS_PATH }}'
             cd ${{ secrets.APP_DIR }}
+            ls -a 
             git pull
           "
 
