@@ -60,15 +60,15 @@ jobs:
             kill \"\$SSH_AGENT_PID\"
           "
 
-      - name: Lowercase Github Actor
+      - name: Lowercase Repository Owner
         run: |
-          echo "ACTOR_LC=${ACTOR,,}" >> "$GITHUB_ENV"
+          echo "OWNER_LC=${OWNER,,}" >> "$GITHUB_ENV"
         env:
-          ACTOR: ${{ github.actor }}
+          OWNER: ${{ github.repository_owner }}
 
       - name: (TEST) Pull image from GHCR
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "
-            echo "${{ secrets.GITHUB_TOKEN }}" docker login ${{ env.REGISTRY }} -u \"$ACTOR_LC\" --password-stdin
-            docker pull ${{ env.REGISTRY }}/${{ github.repository }}/armv7
+            echo '${{ secrets.GITHUB_TOKEN }}' | docker login ${{ env.REGISTRY }} -u '${{ github.actor }}' --password-stdin
+            docker pull ${{ env.REGISTRY }}/${OWNER_LC}/${{ github.event.repository.name }}:armv7
           "
