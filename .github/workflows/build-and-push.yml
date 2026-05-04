@@ -1,0 +1,51 @@
+---
+name: Build and Push Image
+
+on:
+  workflow_run:
+    workflows: [Continuous Integration]
+    branches: [main, development]
+    types:
+      - completed
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-push:
+    name: Build Docker Image with ARM Architecture and Push to GHCR 
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Setup QEMU
+        uses: docker/setup-qemu-action@v4.0.0
+
+      - name: Docker Setup Buildx
+        uses: docker/setup-buildx-action@v4.0.0
+
+      - name: Lowercase Repository Owner
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >> "$GITHUB_ENV"
+        env:
+          OWNER: ${{ github.repository_owner }}
+
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v7.1.0
+        with:
+          context: .
+          platforms: linux/arm/v7
+          push: True
+          tags: ${{ env.REGISTRY }}/${{ env.OWNER_LC }}/maxicom-bims:/${{ github.ref_name == 'main' && 'prod-armv7' || 'staging-armv7' }}
+          cache-from: type=registry,ref=${{ env.REGISTRY }}/${{ env.OWNER_LC }}/${{ github.event.repository.name }}:buildcache
+          cache-to: type=registry,ref=${{ env.REGISTRY }}/${{ env.OWNER_LC }}/${{ github.event.repository.name }}:buildcache,mode=max

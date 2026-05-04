@@ -1,0 +1,67 @@
+---
+name: Deploy to Server
+
+on:
+  workflow_run:
+    workflows: [Build and Push Image]
+    branches:
+      - main
+    types:
+      - completed
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  pull-from-server:
+    name: Command server to pull and run Docker Image
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Setup Tailscale on Runner
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:cicd
+          ping: ${{ secrets.TS_SERVER_HOST }}
+    
+      - name: Set up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" >> ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+          ssh-keyscan ${{ secrets.TS_SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Pull Codebase from Github
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "
+            eval \"\$(ssh-agent -s)\"
+            ssh-add '${{ secrets.TS_SERVER_KEYS_PATH }}'
+            cd ${{ secrets.APP_DIR }}
+            
+            git fetch origin
+            git checkout '${{ github.ref_name }}'
+            git reset --hard 'origin/${{ github.ref_name }}'
+
+            kill \"\$SSH_AGENT_PID\"
+          "
+
+      - name: Lowercase Repository Owner
+        run: |
+          echo "OWNER_LC=${OWNER,,}" >> "$GITHUB_ENV"
+        env:
+          OWNER: ${{ github.repository_owner }}
+
+      - name: Pull image from GHCR
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "
+            echo '${{ secrets.GITHUB_TOKEN }}' | docker login ${{ env.REGISTRY }} -u '${{ github.actor }}' --password-stdin
+            docker pull ${{ env.REGISTRY }}/${OWNER_LC}/${{ github.event.repository.name }}:${{ github.ref_name == 'main' && 'prod-armv7' || 'staging-armv7' }}
+          "
