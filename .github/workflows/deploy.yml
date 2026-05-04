@@ -1,21 +1,13 @@
 ---
 name: Deploy to Server
 
-# on:
-#   workflow_run:
-#     workflows: [Continuous Integration]
-#     branches:
-#       - main
-#     types:
-#       - completed
-
-# on:
-#   workflow_dispatch:
-   
 on:
-  push:
+  workflow_run:
+    workflows: [Build and Push Image]
     branches:
-      - test/cicd
+      - main
+    types:
+      - completed
 
 permissions:
   contents: read

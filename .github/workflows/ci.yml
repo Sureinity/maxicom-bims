@@ -3,9 +3,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: [main, development, feature/*, test/*, '!test/cicd']
+    branches: [main, development]
   push:
-    branches: [main, development, feature/*, test/*, '!test/cicd']
+    branches: [main, development]
 
 concurrency:
   group: ci-${{ github.ref }}
