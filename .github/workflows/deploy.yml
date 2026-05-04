@@ -55,8 +55,9 @@ jobs:
             cd ${{ secrets.APP_DIR }}
             
             git fetch origin
-            git checkout main
-            git reset --hard origin/test/cicd
+            git checkout '${{ github.ref_name }}'
+            git reset --hard 'origin/${{ github.ref_name }}'
+
             kill \"\$SSH_AGENT_PID\"
           "
 
@@ -66,9 +67,9 @@ jobs:
         env:
           OWNER: ${{ github.repository_owner }}
 
-      - name: (TEST) Pull image from GHCR
+      - name: Pull image from GHCR
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.SSH_USER }}@${{ secrets.TS_SERVER_HOST }} "
             echo '${{ secrets.GITHUB_TOKEN }}' | docker login ${{ env.REGISTRY }} -u '${{ github.actor }}' --password-stdin
-            docker pull ${{ env.REGISTRY }}/${OWNER_LC}/${{ github.event.repository.name }}:armv7
+            docker pull ${{ env.REGISTRY }}/${OWNER_LC}/${{ github.event.repository.name }}:${{ github.ref_name == 'main' && 'prod-armv7' || 'staging-armv7' }}
           "
